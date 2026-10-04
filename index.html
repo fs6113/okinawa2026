@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>沖繩家族旅行手冊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tap-effect:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+        html { scroll-behavior: smooth; }
+        
+        /* 下拉選單動畫 */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="text-slate-800 pb-24 antialiased">
+
+    <header class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="px-5 py-4 flex justify-between items-center bg-white">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-wide">🌺 沖繩家族旅行</h1>
+                <p class="text-sm text-slate-500 mt-1 font-bold">10.31 - 11.05 ｜ 6 天 5 夜</p>
+            </div>
+            <div class="bg-blue-50 p-2.5 rounded-full shadow-inner">
+                <span class="text-2xl">✈️</span>
+            </div>
+        </div>
+        
+        <div class="flex overflow-x-auto hide-scrollbar px-4 py-3 space-x-2.5 bg-slate-50/50" id="date-tabs">
+            <!-- JS 動態生成日期按鈕 -->
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto pt-5 px-4" id="schedule-container">
+        <!-- JS 動態生成行程卡片 -->
+    </main>
+
+    <div class="max-w-md mx-auto mt-10 text-center px-4">
+        <p class="text-sm font-medium text-slate-400 mb-2">Have a wonderful trip!</p>
+    </div>
+
+    <script>
+        // 資料已轉換為日本時間 (GMT+9)，並根據指示分配了下拉選單與直顯攻略
+        const itineraryData = [
+            {
+                date: "10/31",
+                day: "週六",
+                events: [
+                    { 
+                        time: "08:15 - 10:45", 
+                        title: "台灣 ✈ 日本", 
+                        type: "交通", 
+                        icon: "🛫",
+                        details: [
+                            "✈️ 航班：中華航空 CI120",
+                            "📍 起飛：桃園機場 (TPE) 第二航廈 (Terminal 2)",
+                            "🎫 艙等：H (TWSHECB)",
+                            "🛬 抵達：沖繩那霸機場 10:45",
+                            "⏰ 10/29 (起飛前48小時) 記得上網劃位選位！"
+                        ]
+                    },
+                    { time: "13:30 - 14:30", title: "OTS 租車", type: "交通", icon: "🚗", memo: "取車，確認導航設定與安全座椅。" },
+                    { 
+                        time: "15:00", 
+                        title: "hoppepan 麵包店", 
+                        type: "美食",
+                        icon: "🥐",
+                        mapcode: "33 157 89637 或 33 219 89464", 
+                        phone: "098-943-0703",
+                        details: [
+                            "📍 必夾：炸蝦蛋沙拉堡、明太子法棍、迷你可頌"
+                        ],
+                        fullGuide: `
+                            <p><strong>🏪 營業資訊：</strong>一週只開四天 (週四至週日)，營業時間 10:00-19:00。</p>
+                            <p><strong>🤤 必吃完整清單：</strong><br>
+                            • <strong>炸蝦蛋沙拉堡：</strong> 酥脆炸蝦搭配濃郁雞蛋沙拉，日式風味十足。<br>
+                            • <strong>明太子法棍：</strong> 鹹香夠味、口感涮嘴，明太子控必夾。<br>
+                            • <strong>迷你可頌：</strong> 奶油香氣濃郁，口感酥脆。<br>
+                            • <strong>麝香葡萄奶油麵包：</strong> 多汁頂級葡萄與清爽奶油，滋味驚豔。<br>
+                            • <strong>紅豆奶油麵包：</strong> 經典日式甜而不膩。</p>
+                        `
+                    },
+                    { 
+                        time: "15:30 - 18:30", 
+                        title: "東南植物園燈光秀", 
+                        type: "景點", 
+                        icon: "✨",
+                        mapcode: "33 742 510*33",
+                        phone: "098-939-2555",
+                        details: [
+                            "🎫 買「一日券」，16:00 看水豚，17:00 等點燈與雷射秀",
+                            "🍽️ 晚餐直接在草地「美食屋台區」吃烤肉丼"
+                        ],
+                        fullGuide: `
+                            <p><strong>🎟️ 票券與活動時間：</strong><br>
+                            17:00前算白天券，建議直接買一日券。點燈活動僅限定於左側「水上樂園區」。<br>
+                            雷射秀在點燈後，每小時「整點」與「半點」舉行。</p>
+                            <p><strong>🐒 動物互動與表演：</strong><br>
+                            • 鳥類表演秀：11:00、15:00。<br>
+                            • 水豚與松鼠猴：週末 12:00, 14:00, 16:00 各半小時。6歲以上300日圓，需大人購票陪同。</p>
+                            <p><strong>🍽️ 護老托幼晚餐(美食屋台)：</strong><br>
+                            草地區有烤肉丼、牛排餐車。木製野餐桌寬敞、推車好放，小孩可在草地活動不擁擠。</p>
+                            <p><strong>🚌 備案：</strong>走累可搭夜間遊園車「ヤッシー号」(20分/500圓)坐著看燈飾。</p>
+                        `
+                    },
+                    { 
+                        time: "16:00", 
+                        title: "当南食堂", 
+                        type: "美食", 
+                        icon: "🍜",
+                        phone: "098-938-9965",
+                        directGuide: `
+                            <p><strong>🍜 極簡菜單：</strong>菜單只有三種餐點可選，不怕選擇困難。</p>
+                            <p><strong>🍵 貼心服務：</strong>每桌都會備有一大瓶免費的無糖冰麥茶，非常解渴解膩。</p>
+                        `
+                    },
+                    { time: "21:00", title: "MaxValu Nago 超市", type: "逛街", icon: "🛒", mapcode: "206 687 352*67", memo: "採買宵夜與隔日早餐" },
+                    { 
+                        time: "22:00", 
+                        title: "Check in - Lieta Nakayama", 
+                        type: "住宿", 
+                        icon: "🏨",
+                        mapcode: "206 716 705*30",
+                        phone: "0980-51-1511",
+                        details: [
+                            "📝 確認碼 5797.814.568 ｜ PIN碼 4851",
+                            "⚠️ 辦理入住至 00:00 止"
+                        ],
+                        fullGuide: `
+                            <p><strong>🏠 房型資訊 (Moderate Room)：</strong><br>
+                            63平方公尺，配置 2 張單人床與 6 張日式床舖 (和室榻榻米非常適合小孩滾來滾去)。</p>
+                            <p><strong>🧺 實用設施：</strong><br>
+                            房內附有完整廚房 (微波爐、冰箱、爐子) 以及獨立的洗衣機與烘衣機，適合處理一家老小的衣物與宵夜。</p>
+                            <p><strong>🅿 停車：</strong>已於訂單備註需求免費停車位。</p>
+                        `
+                    }
+                ]
+            },
+            {
+                date: "11/01",
+                day: "週日",
+                events: [
+                    { 
+                        time: "08:30 - 11:30", 
+                        title: "美麗海水族館", 
+                        type: "景點", 
+                        icon: "🐋", 
+                        mapcode: "553 075 797*74",
+                        phone: "0980-48-3748",
+                        details: [
+                            "🅿️ 請停 P7 停車場最靠近入口",
+                            "🐬 10:30 看海豚秀，記得派人去排餵食券！"
+                        ],
+                        fullGuide: `
+                            <p><strong>🎫 海豚秀黃金戰術：</strong><br>
+                            看 10:30 海豚秀時，強烈建議看到一半先派代表去右手邊「白色帳篷」排隊。11:00 會發放餵食券，建議買3桶讓大家輪流餵。</p>
+                            <p><strong>🦈 黑潮探險隱藏玩法：</strong><br>
+                            10:45 前可搭乘「黑潮探險電梯」上到大水池上方看鯨鯊 (註: 2026/3-7月因工程暫停開放，若開放必去)。</p>
+                            <p><strong>🎁 抽鯨鯊娃娃：</strong><br>
+                            回程接近 P7 停車場的「綜合諮詢處」，可以花 1000 日圓抽獎一次，拼一隻大鯨鯊回家！</p>
+                        `
+                    },
+                    { 
+                        time: "12:00", 
+                        title: "古宇利島", 
+                        type: "景點", 
+                        icon: "🏝️️",
+                        fullGuide: `
+                            <p><strong>📸 最佳拍照點：</strong><br>
+                            想要遠眺古宇利大橋全貌，推薦至屋我地島這一側的「南詰展望所」取景最美。</p>
+                        `
+                    },
+                    { time: "13:00", title: "Shirasa 食堂", type: "美食", icon: "🍤", mapcode: "485 692 126*72" },
+                    { time: "13:30", title: "古宇利蝦蝦飯", type: "美食", icon: "🦐", phone: "0980-56-1242" },
+                    { 
+                        time: "14:00", 
+                        title: "古宇利海洋塔", 
+                        type: "景點", 
+                        icon: "🗼", 
+                        mapcode: "485 693 485*14",
+                        phone: "0980-56-1616",
+                        details: [
+                            "🎟️ 可用 Enjoy Pass 換票，搭自動台車上山"
+                        ],
+                        fullGuide: `
+                            <p><strong>🎫 換票與導覽：</strong><br>
+                            出示 Okinawa Enjoy Pass 即可換票，售票員會提供中文版地圖。</p>
+                            <p><strong>🚗 輕鬆攻頂：</strong><br>
+                            搭乘 4 人座自動台車上山(約8分鐘)，方向盤是裝飾用免自己開，長輩也能輕鬆飽覽大橋海景。</p>
+                            <p><strong>🏢 樓層導覽：</strong><br>
+                            • 1F：貝殼博物館 (1500種貝殼)。<br>
+                            • 2F：室內360度展望室。<br>
+                            • 3F：戶外觀景台。<br>
+                            • 1F販賣部：必吃沖繩黑糖熬煮的「黑糖善哉 (黑糖ぜんざい)」。</p>
+                        `
+                    },
+                    { 
+                        time: "19:00", 
+                        title: "燒肉五苑 名護店", 
+                        type: "美食", 
+                        icon: "🥩", 
+                        mapcode: "206 686 469*86",
+                        phone: "0980-54-8129",
+                        details: [
+                            "💡 點餐：網推點中價位「結」套餐，烤網免費換3次",
+                            "🎮 候位備案：隔壁大型二手店「漫畫倉庫」"
+                        ],
+                        fullGuide: `
+                            <p><strong>🎮 候位不無聊戰術：</strong><br>
+                            若遇客滿，強烈建議到隔壁「漫畫倉庫」逛逛，有夾娃娃機、二手玩具與高爾夫球具，小孩開心大人也能挖寶。</p>
+                            <p><strong>💡 點餐秘訣：</strong><br>
+                            網路一致推薦點中間價位「結」套餐就很夠吃。飲料採喝到飽，烤網可免費換3次（第4次起收費）。</p>
+                            <p><strong>📝 必點菜單翻譯：</strong><br>
+                            • 牛肉：多汁牛五花、厚切蔥鹽橫膈膜、骰子牛。<br>
+                            • 豬肉：厚切豬五花、松阪豬。<br>
+                            • 主食：石鍋蒜香奶油飯、激辛拉麵、滑嫩半熟蛋滿滿蔥花飯。<br>
+                            • 甜點：千層蛋糕、奶油起司大福冰淇淋。</p>
+                        `
+                    },
+                    { 
+                        time: "21:00", 
+                        title: "MEGA 唐吉訶德 / 永旺AEON", 
+                        type: "逛街", 
+                        icon: "🛍️", 
+                        mapcode: "唐吉: 206 688 396*00 / AEON: 206 688 642",
+                        fullGuide: `
+                            <p><strong>🛒 永旺 AEON 名護店 (營業至 23:00)：</strong><br>
+                            內有 UNIQLO、DAISO、ABC-MART。一樓生鮮超市適合買在地農產與伴手禮。</p>
+                            <p><strong>⚠️ 避坑提醒：</strong><br>
+                            網友評價 AEON 超市的壽司跟便當口味不佳，請自行斟酌。</p>
+                        `
+                    }
+                ]
+            },
+            {
+                date: "11/02",
+                day: "週一",
+                events: [
+                    { 
+                        time: "08:00 - 09:30", 
+                        title: "21世紀之森公園", 
+                        type: "景點", 
+                        icon: "🌳", 
+                        mapcode: "206 626 503*38", 
+                        memo: "(備案) 晨間散步放電",
+                        fullGuide: `
+                            <p><strong>☕ 星巴克借草蓆：</strong><br>
+                            只要有消費，就可以免費拿取店內入口處的「沖繩藺草蓆」去外面的大草地野餐（用完歸還），超有氛圍！</p>
+                            <p><strong>🛝 親子放電設施：</strong><br>
+                            公園內有新落成的「巨大鯨鯊溜滑梯」，非常適合讓小朋友晨間消耗體力。</p>
+                        `
+                    },
+                    { 
+                        time: "10:00", 
+                        title: "Check out - Lieta Nakayama", 
+                        type: "住宿", 
+                        icon: "🗝️", 
+                        memo: "最晚退房時間為 10:00" 
+                    },
+                    { 
+                        time: "10:00 - 12:00", 
+                        title: "百年古家 大家", 
+                        type: "美食", 
+                        icon: "🍲",
+                        details: [
+                            "⚠ 停好車後，第一時間先去「機台抽號碼牌」！"
+                        ]
+                    },
+                    { 
+                        time: "12:00 - 13:00", 
+                        title: "西松屋 名護大南店", 
+                        type: "逛街", 
+                        icon: "🐰", 
+                        mapcode: "206 628 029*64",
+                        details: [
+                            "🛍️ 買去學校弄髒不心疼的、泡澡球超級齊全"
+                        ],
+                        fullGuide: `
+                            <p><strong>⚠️ 注意：</strong>西松屋【不可退稅】。衣服便宜款式基本，適合買消耗品。</p>
+                            <p><strong>🧸 最大優勢：</strong>幼兒食、零食選擇最多(批發庫存等級)。泡澡球與玩具價格最便宜，款式(三麗鷗/汪汪隊/新幹線)比唐吉訶德還齊全。</p>
+                            <p><strong>📝 專屬購買清單：</strong><br>
+                            • 啾：雨鞋、雨衣、水壺、明治液態奶。<br>
+                            • 姐妹：衣服、內褲、泡澡球。</p>
+                        `
+                    },
+                    { 
+                        time: "12:00 - 13:00", 
+                        title: "Birthday 名護店", 
+                        type: "逛街", 
+                        icon: "🎈", 
+                        mapcode: "206 689 516*54",
+                        details: [
+                            "🛍️ 有退稅！買設計感好、過年外出服，附設兒童遊戲區"
+                        ],
+                        fullGuide: `
+                            <p><strong>✅ 購物亮點：</strong>今年開始【可退稅】！裝潢明亮溫馨，衣服有按品牌與顏色分類，逛起來心情極佳。</p>
+                            <p><strong>👗 服裝風格：</strong>設計感強、日系大地色/文青風，非常適合買過年或外出拍照穿的漂亮衣服。</p>
+                            <p><strong>🧸 貼心設施：</strong>店內有一小區遊樂區，可以把小朋友安置在裡面玩，大人專心挑選。</p>
+                        `
+                    },
+                    { 
+                        time: "14:30 - 15:30", 
+                        title: "BANTA CAFE", 
+                        type: "美食", 
+                        icon: "🍹", 
+                        mapcode: "33 880 658*05",
+                        details: [
+                            "💡 先自助式點餐後，再去尋找座位",
+                            "🛋️ 帶娃強烈推薦：Gorogoro 室內沙發區 (有冷氣)"
+                        ],
+                        fullGuide: `
+                            <p><strong>🌅 四大看海座位區：</strong><br>
+                            1. 大屋頂露臺：從高處俯瞰 180 度海景。<br>
+                            2. 海邊露臺：與海平面同高，榻榻米座位。<br>
+                            3. 岩石露臺：嵌在奇岩間，隱密叢林感。<br>
+                            4. Gorogoro 區：室內冷氣躺椅，最適合怕熱或帶嬰幼兒滾來滾去！</p>
+                            <p><strong>🍹 必點招牌：</strong><br>
+                            • Bukubuku 泡泡果凍蘇打 (網美打卡必備)<br>
+                            • 沖繩豬肉蛋飯糰<br>
+                            • 騎士漢堡 (午間限定牛肉排)</p>
+                        `
+                    },
+                    { 
+                        time: "16:30 - 19:00", 
+                        title: "美國村", 
+                        type: "景點", 
+                        icon: "🎡",
+                        details: [
+                            "🅿️️ 停車戰略：強烈推薦停【AEON永旺】室內躲西曬！",
+                            "🌅 16:00 塗鴉牆拍照 -> 17:30 日落海灘"
+                        ],
+                        fullGuide: `
+                            <p><strong>🇺🇸 歷史淵源：</strong>前身為美軍基地，結合旁嘉手納基地生活圈，打造出西海岸風情，是沖繩美日融合最真實的縮影。</p>
+                            <p><strong>🅿️ 黃金停車戰略 (停 AEON 北谷店)：</strong><br>
+                            下午三點半抵達剛好西曬，停在 AEON 室內停車場可保車內涼爽。最重要的是，下車立刻利用 AEON 完善的無障礙廁所與哺乳室換尿布，長輩也能稍作休息。</p>
+                            <p><strong>🛍️ 區域特色：</strong><br>
+                            • Depot Island：核心區，彩色建築、海景與最多餐廳。<br>
+                            • American Depot：美式古著與懷舊雜貨。<br>
+                            • Depot Central：潮流品牌與藝術裝置。<br>
+                            • 沖繩屋：特色伴手禮與零食專賣店。</p>
+                            <p><strong>🍽️ 親子晚餐推薦：</strong><br>
+                            The Calif Kitchen (在 Blue Seal 樓上)，有提供兒童菜單(烏龍麵/咖哩飯/熱狗薯餅)，海景第一排。</p>
+                        `
+                    },
+                    { 
+                        time: "20:30", 
+                        title: "Check in - HOTEL Chula Vista", 
+                        type: "住宿",
+                        icon: "🏨",
+                        details: [
+                            "⚠ 最晚辦理入住時間為 21:00",
+                            "⚠️ 原訂17:00入住，請務必先用Booking訊息通知保留房間"
+                        ],
+                        fullGuide: `
+                            <p><strong>🏠 房型資訊：</strong><br>
+                            雙臥室套房。附帶完整廚房 (微波爐、冰箱、爐子) 以及洗衣機。</p>
+                            <p><strong>⏱️ 時間規定：</strong><br>
+                            入住時間：15:00 - 21:00。<br>
+                            退房時間：隔日 11:00 前。</p>
+                        `
+                    }
+                ]
+            },
+            {
+                date: "11/03",
+                day: "週二",
+                events: [
+                    { time: "07:00", title: "JEF 豐見城店", type: "美食", icon: "🍔", mapcode: "33 034 260*58", memo: "沖繩在地苦瓜漢堡" },
+                    { 
+                        time: "09:00", 
+                        title: "達摩寺", 
+                        type: "景點", 
+                        icon: "⛩️",
+                        details: [
+                            "⚠️ 嚴重警告：當日遇首里城遶境，務必於 11:00 前離開！"
+                        ],
+                        fullGuide: `
+                            <p><strong>⚠️ 交通管制注意：</strong>當天會撞到首里城遶境，務必於中午 11:00 前離開，否則會被周邊交管困住影響行程。</p>
+                            <p><strong>🅿️ 停車資訊：</strong>正門車位極少。導航請直接設定「達摩停車場」或周邊的「第二駐車場」。</p>
+                        `
+                    },
+                    { 
+                        time: "12:00", 
+                        title: "第一牧志公設市場", 
+                        type: "美食", 
+                        icon: "🦀",
+                        directGuide: `
+                            <p><strong>🐟 一樓買海鮮：</strong><br>
+                            推薦【仲田鮮魚】，店員會說中文，溝通順暢且會協助推薦龍蝦、夜光貝等。</p>
+                            <p><strong>🍳 二樓代客料理：</strong><br>
+                            將海鮮帶到二樓，代客料理費為一人 550 日圓 / 煮三道菜。店家推薦【燕子餐廳】。</p>
+                        `
+                    },
+                    { 
+                        time: "12:00", 
+                        title: "國際通", 
+                        type: "逛街", 
+                        icon: "🛍️",
+                        directGuide: `
+                            <p><strong>🅿️ 停車場推薦：</strong><br>
+                            優先選擇【みどり駐車場】，可以停約 200 台車，腹地較大比較不怕沒位子。</p>
+                        `
+                    },
+                    { time: "17:00", title: "瀨長島", type: "景點", icon: "🌅", memo: "看飛機起降與西海岸夕陽" },
+                    { 
+                        time: "19:00", 
+                        title: "琉球新麵 通堂 小祿本店", 
+                        type: "美食", 
+                        icon: "🍜", 
+                        mapcode: "33 095 245*85",
+                        details: [
+                            "💡 必吃亮點：桌上的【免費辣豆芽菜】微辣爽脆超級好吃！"
+                        ],
+                        directGuide: `
+                            <p><strong>🍜 招牌雙麵解析：</strong><br>
+                            • <strong>男人麵：</strong> 正宗博多豬骨湯頭。濃郁醇厚膠質豐富，且不腥不油，搭配細直麵超對味。<br>
+                            • <strong>女人麵：</strong> 輕鹽雞高湯基底。清爽甘甜，帶有蔬菜鮮甜，平常不愛重口味的人也能輕鬆喝完。</p>
+                            <p><strong>🥟 其他推薦：</strong>除了必吃的辣豆芽菜，煎餃和叉燒飯的評價也非常高。</p>
+                        `
+                    }
+                ]
+            },
+            {
+                date: "11/04",
+                day: "週三",
+                events: [
+                    { 
+                        time: "09:00", 
+                        title: "波上宮", 
+                        type: "景點", 
+                        icon: "⛩️", 
+                        mapcode: "33 185 022*00",
+                        details: [
+                            "📸 從黑色鳥居走 10 分鐘上「陸橋」，可拍海崖絕景",
+                            "🎒 推薦買小學生書包御守 (保交通安全)"
+                        ],
+                        fullGuide: `
+                            <p><strong>⛩️ 歷史背景：</strong>沖繩最具代表性神社，建於懸崖之上，供奉伊奘冉尊等神明，保佑航海與平安。</p>
+                            <p><strong>🅿️ 停車策略：</strong>正門旁有專用免費停車(限30分)。若滿了建議改停付費的「若狹海濱公園停車場」。</p>
+                            <p><strong>💧 洗手儀式：</strong>右手拿勺洗左手 -> 左手拿勺洗右手 -> 右手拿勺將水倒在左手心漱口 (勿直接對嘴) -> 再洗左手 -> 豎起木勺沖洗握柄。</p>
+                            <p><strong>🧧 御守與朱印：</strong><br>
+                            • 紅型御守：沖繩染布製作(保健康)。<br>
+                            • 書包御守：熱門款(保交通安全)。<br>
+                            • 結緣御守：貝殼造型(保姻緣)。<br>
+                            • 御朱印有普通紙、和紙與刺繡版可選。</p>
+                        `
+                    },
+                    { 
+                        time: "10:00", 
+                        title: "泊港漁市場", 
+                        type: "美食", 
+                        icon: "🍣",
+                        phone: "098-868-1096",
+                        directGuide: `
+                            <p><strong>🐟 最佳時機：</strong>早上 10:30 剛好是漁船回港的時間，可以買到最新鮮的海產！</p>
+                        `
+                    },
+                    { 
+                        time: "12:00", 
+                        title: "浦添大公園", 
+                        type: "景點", 
+                        icon: "🛝", 
+                        mapcode: "33 312 112*02",
+                        details: [
+                            "⚠️ 因限齡問題，帶幼童請直接導航至【C區】"
+                        ],
+                        fullGuide: `
+                            <p><strong>⚠️ 分區重點注意：</strong><br>
+                            最出名的 B區(90公尺超長溜滑梯) 限制 6-12 歲才能玩！請直接將導航設定為【C區】。</p>
+                            <p><strong>👶 C區遊具介紹：</strong><br>
+                            分為「3歲前幼兒」與「3-6歲」兩大全新大型遊具區。<br>
+                            旁邊設有公廁與自動販賣機，是非常棒的野餐與放電據點。</p>
+                        `
+                    },
+                    { time: "13:00", title: "Parco City", type: "逛街", icon: "🏬", memo: "西海岸大型購物中心" }
+                ]
+            },
+            {
+                date: "11/05",
+                day: "週四",
+                events: [
+                    { 
+                        time: "09:00", 
+                        title: "沖繩世界文化王國", 
+                        type: "景點", 
+                        icon: "🦇", 
+                        mapcode: "232 495 333*86",
+                        phone: "098-949-7421",
+                        details: [
+                            "🥁 鎖定 10:30 在 EISA 廣場的太鼓表演！"
+                        ],
+                        directGuide: `
+                            <p><strong>🪨 玉泉洞：</strong>全長 5000 公尺，開放區約 890 公尺。全程約需走 30-40 分鐘，若要慢慢拍照建議預留 1 小時。</p>
+                            <p><strong>🥁 太鼓表演必看：</strong><br>
+                            每日三場 (10:30、12:30、14:30)，地點在 EISA 廣場，表演約 25 分鐘，極度震撼。</p>
+                            <p><strong>🏠 琉球王國城下町：</strong><br>
+                            園區有百年歷史的紅瓦古民宅，其中一棟開放「脫鞋入內」休息，很適合長輩坐著感受古風。</p>
+                        `
+                    },
+                    { time: "12:00", title: "iias 沖繩豐崎", type: "逛街", icon: "🏬" },
+                    { time: "15:00", title: "SPORTS DEPO Toyosaki", type: "逛街", icon: "👟", memo: "運動用品最後採買" },
+                    { time: "15:30", title: "OTS 還車", type: "交通", icon: "🚗", memo: "請預留時間檢查車輛與加油" },
+                    { 
+                        time: "20:25 - 20:55", 
+                        title: "日本 ✈ 台灣", 
+                        type: "交通", 
+                        icon: "✈️", 
+                        memo: "滿載而歸，平安回家！",
+                        details: [
+                            "✈️ 航班：中華航空 CI123",
+                            "📍 起飛：那霸機場 (OKA) 國際線航廈 (Terminal I)",
+                            "🎫 艙等：N (TWSHECB)",
+                            "🧳 行李：託運行李 1PC",
+                            "🛬 抵達：桃園機場 20:55"
+                        ]
+                    }
+                ]
+            },
+            {
+                date: "📌",
+                day: "備案池",
+                events: [
+                    { time: "景點備案", title: "許田休息站（道之驛許田）", type: "景點", icon: "🛣️", memo: "可買便宜門票與農特產" },
+                    { time: "景點備案", title: "首里城 / 萬座毛", type: "景點", icon: "🏯", memo: "歷史與自然景觀備案" },
+                    { time: "景點備案", title: "今帰仁桜市場", type: "景點", icon: "🌸", memo: "北部名護景點備案" },
+                    { time: "逛街備案", title: "AEON那霸 / KOJIMA×BicCamera", type: "逛街", icon: "🏬", memo: "Check-in前補貨首選" },
+                    { time: "餐飲備案", title: "今歸仁そば", type: "美食", icon: "🍜", memo: "北部沖繩麵備案" },
+                    { time: "餐飲備案", title: "暖暮拉麵 名護店", type: "美食", icon: "🍜", memo: "人氣排隊拉麵備案" },
+                    { time: "餐飲備案", title: "HAMA濱壽司 名護店", type: "美食", icon: "🍣", mapcode: "206 687 196*84" }
+                ]
+            }
+        ];
+
+        let currentDayIndex = 0;
+        const tabsContainer = document.getElementById('date-tabs');
+        const scheduleContainer = document.getElementById('schedule-container');
+
+        function getTypeStyle(type) {
+            switch(type) {
+                case '交通': return 'bg-sky-100 text-sky-700 border-sky-200';
+                case '美食': return 'bg-orange-100 text-orange-700 border-orange-200';
+                case '景點': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                case '住宿': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+                case '逛街': return 'bg-pink-100 text-pink-700 border-pink-200';
+                default: return 'bg-slate-100 text-slate-700 border-slate-200';
+            }
+        }
+
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+            itineraryData.forEach((day, index) => {
+                const isSelected = index === currentDayIndex;
+                const btn = document.createElement('button');
+                
+                btn.className = `whitespace-nowrap px-5 py-2.5 rounded-full text-[15px] font-bold transition-all duration-200 shadow-sm ${
+                    isSelected 
+                    ? 'bg-slate-800 text-white shadow-md transform scale-105' 
+                    : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
+                }`;
+                btn.innerHTML = `${day.date} ${day.day}`;
+                btn.onclick = () => {
+                    currentDayIndex = index;
+                    renderTabs();
+                    renderSchedule();
+                };
+                tabsContainer.appendChild(btn);
+            });
+        }
+
+        function renderSchedule() {
+            scheduleContainer.innerHTML = '';
+            const dayData = itineraryData[currentDayIndex];
+            
+            if (dayData.events.length === 0) {
+                scheduleContainer.innerHTML = '<div class="text-center text-slate-400 mt-12 py-8 bg-white rounded-2xl border border-slate-200 shadow-sm font-medium">本日尚無行程安排</div>';
+                return;
+            }
+
+            const timelineWrapper = document.createElement('div');
+            timelineWrapper.className = 'relative pt-3';
+
+            dayData.events.forEach((event, index) => {
+                const isLast = index === dayData.events.length - 1;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'relative pl-9 mb-7';
+
+                // 左側時間軸圓點與線條
+                let timelineDecor = `
+                    <div class="absolute left-[3px] top-2 w-3.5 h-3.5 bg-blue-500 rounded-full border-[3px] border-white shadow-md z-10"></div>
+                `;
+                if (!isLast) {
+                    timelineDecor += `<div class="absolute left-[8.5px] top-4 bottom-[-35px] w-0.5 bg-slate-200 z-0"></div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden';
+                
+                // 卡片頭部 (時間, 圖示, 標題)
+                const headerHtml = `
+                    <div class="px-4 py-3 border-b border-slate-100 flex items-start gap-3 bg-white">
+                        <div class="mt-0.5 text-[22px] leading-none">${event.icon || '📍'}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                <span class="text-[14px] font-black text-blue-600 font-mono tracking-tight">${event.time}</span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded ${getTypeStyle(event.type)}">${event.type}</span>
+                            </div>
+                            <h3 class="text-[18px] font-black text-slate-800 leading-snug">${event.title}</h3>
+                        </div>
+                    </div>
+                `;
+
+                // 卡片內文 (MapCode, 提示細節, 下拉選單, 直顯攻略)
+                let bodyHtml = '';
+                let hasBody = event.mapcode || event.phone || event.memo || (event.details && event.details.length > 0) || event.fullGuide || event.directGuide;
+
+                if (hasBody) {
+                    bodyHtml += '<div class="px-4 pb-4 pt-3 bg-white">';
+                    
+                    if (event.memo) {
+                        bodyHtml += `<p class="text-[15px] font-bold text-slate-600 mb-3 leading-relaxed border-l-4 border-amber-400 pl-3 bg-amber-50/50 py-1.5">${event.memo}</p>`;
+                    }
+
+                    if (event.mapcode || event.phone) {
+                        bodyHtml += `<div class="flex flex-col gap-2 mb-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-inner">`;
+                        if (event.mapcode) {
+                            bodyHtml += `
+                                <div class="flex items-center text-[15px]">
+                                    <span class="text-slate-400 mr-2">📍</span>
+                                    <span class="font-bold text-slate-500 mr-2">MapCode:</span>
+                                    <span class="font-black text-slate-800 tracking-wider bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200 select-all">${event.mapcode}</span>
+                                </div>
+                            `;
+                        }
+                        if (event.phone) {
+                            bodyHtml += `
+                                <div class="flex items-center text-[15px] mt-0.5">
+                                    <span class="text-slate-400 mr-2">📞</span>
+                                    <span class="font-bold text-slate-500 mr-2">電話:</span>
+                                    <span class="font-black text-slate-800 bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200 select-all">${event.phone}</span>
+                                </div>
+                            `;
+                        }
+                        bodyHtml += `</div>`;
+                    }
+
+                    if (event.details && event.details.length > 0) {
+                        bodyHtml += `<div class="bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 space-y-2.5">`;
+                        event.details.forEach(detail => {
+                            bodyHtml += `<p class="text-[15px] font-bold text-slate-700 leading-relaxed">${detail}</p>`;
+                        });
+                        bodyHtml += `</div>`;
+                    }
+                    
+                    // 導入手風琴下拉式選單 (Accordion) 放進完整攻略
+                    if (event.fullGuide) {
+                        bodyHtml += `
+                            <details class="group mt-3 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                                <summary class="p-3 font-bold text-slate-700 cursor-pointer bg-slate-100 hover:bg-slate-200 transition-colors flex justify-between items-center select-none text-[15px]">
+                                    <span>📖 查看詳細攻略</span>
+                                    <span class="transform group-open:rotate-180 transition-transform duration-200">▼</span>
+                                </summary>
+                                <div class="p-4 text-[14.5px] text-slate-600 space-y-3.5 leading-relaxed bg-white border-t border-slate-200">
+                                    ${event.fullGuide}
+                                </div>
+                            </details>
+                        `;
+                    }
+                    
+                    // 導入直接顯示的內容區塊 (针对当南食堂等6个地点)
+                    if (event.directGuide) {
+                        bodyHtml += `
+                            <div class="mt-3 p-4 text-[14.5px] text-slate-700 space-y-3.5 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
+                                ${event.directGuide}
+                            </div>
+                        `;
+                    }
+                    
+                    bodyHtml += '</div>';
+                }
+
+                card.innerHTML = headerHtml + bodyHtml;
+                itemDiv.innerHTML = timelineDecor;
+                itemDiv.appendChild(card);
+                timelineWrapper.appendChild(itemDiv);
+            });
+            
+            scheduleContainer.appendChild(timelineWrapper);
+
+            // 加入切換日期時的淡入動畫
+            scheduleContainer.style.opacity = 0;
+            scheduleContainer.style.transform = 'translateY(8px)';
+            setTimeout(() => {
+                scheduleContainer.style.transition = 'all 0.3s ease-out';
+                scheduleContainer.style.opacity = 1;
+                scheduleContainer.style.transform = 'translateY(0)';
+            }, 20);
+        }
+
+        renderTabs();
+        renderSchedule();
+    </script>
+</body>
+</html>
