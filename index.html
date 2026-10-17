@@ -27,16 +27,24 @@
         
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
+
+        /* Modal Transition */
+        #image-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #image-modal.show {
+            opacity: 1;
+        }
     </style>
 </head>
-<body class="text-slate-800 pb-24 antialiased">
+<body class="text-slate-800 pb-24 antialiased relative">
 
-    <header class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200">
+    <header class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-slate-200">
         <div class="px-5 py-4 flex justify-between items-center bg-white">
             <div>
                 <h1 class="text-2xl font-black text-slate-800 tracking-wide">🌺 沖繩家族旅行</h1>
                 <p class="text-sm text-slate-500 mt-1 font-bold">10.31 - 11.05 ｜ 6 天 5 夜</p>
-                <p class="text-xs text-blue-500 font-bold mt-0.5">※ 行程時間皆為日本當地時間 (GMT+9)</p>
+                <p class="text-xs text-blue-500 font-bold mt-0.5">※ 以下行程時間皆為日本時間 (GMT+9)</p>
             </div>
             <div class="bg-blue-50 p-2.5 rounded-full shadow-inner">
                 <span class="text-2xl">✈️</span>
@@ -52,18 +60,25 @@
         <!-- JS 動態生成行程卡片 -->
     </main>
 
-    <div class="max-w-md mx-auto mt-10 text-center px-4">
-        <p class="text-sm font-medium text-slate-400 mb-2">Have a wonderful trip!</p>
+    <!-- Image Viewer Modal (Lightbox) -->
+    <div id="image-modal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-2 opacity-0 pointer-events-none hidden" onclick="closeImageModal()">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 z-50 text-white bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors">
+            ✕
+        </button>
+        <div class="relative max-w-full max-h-full flex items-center justify-center w-full h-full p-2">
+            <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+        </div>
     </div>
 
     <script>
+        // 資料結構設定
         const itineraryData = [
             {
                 date: "10/31",
                 day: "週六",
                 events: [
                     { 
-                        time: "08:10 - 10:45", 
+                        time: "08:10(TW) - 10:45(JP)", 
                         title: "台灣 ✈ 日本", 
                         type: "交通", 
                         icon: "🛫",
@@ -81,7 +96,7 @@
                         type: "交通", 
                         icon: "🚗", 
                         memo: "取車，確認導航設定與安全座椅。",
-                        mainImage: "images/ots-car.png",
+                        mainImage: "ots-car.png",
                         details: [
                             "📍 取車營業所：臨空豐崎營業所 (那覇機場)",
                             "🚐 交通方式：機場接送 (免費)",
@@ -89,11 +104,7 @@
                             "🚙 車種：WB 級別【三菱】Delica D:5",
                             "⚠️ 必備文件：台灣駕照正本、日文譯本正本",
                             "💰 費用：總計 80,560日元 (當地支付)"
-                        ],
-                        fullGuide: `
-                            <p><strong>【重要】關於違規停車的通知</strong><br>
-                            未經公寓大樓、住宅、月租停車場等業主許可，請勿隨意停車。此類違規停車不僅會給週邊居民帶來不便，還可能造成糾紛並導致您支付高額違停費用。</p>
-                        `
+                        ]
                     },
                     { 
                         time: "15:00", 
@@ -105,10 +116,10 @@
                         details: [
                             "📍 必夾：炸蝦蛋沙拉堡、明太子法棍、迷你可頌"
                         ],
-                        mainImage: "images/hoppepan-1.png",
+                        mainImage: "hoppepan-1.png",
                         illustratedGuides: [
-                            { img: "images/hoppepan-2.png", title: "炸蝦蛋沙拉堡", desc: "酥脆" },
-                            { img: "images/hoppepan-3.png", title: "明太子小法棍", desc: "鹹香" }
+                            { img: "hoppepan-2.png", title: "炸蝦蛋沙拉堡", desc: "酥脆" },
+                            { img: "hoppepan-3.png", title: "明太子小法棍", desc: "鹹香" }
                         ]
                     },
                     { 
@@ -117,9 +128,9 @@
                         type: "美食", 
                         icon: "🍜",
                         phone: "+81 98-938-9965",
-                        mainImage: "images/tonan-1.png",
+                        mainImage: "tonan-1.png",
                         illustratedGuides: [
-                            { img: "images/tonan-2.png", title: "菜單", desc: "" }
+                            { img: "tonan-2.png", title: "菜單", desc: "" }
                         ],
                         directGuide: `
                             <p><strong>🍜 【菜單極簡】</strong><br>
@@ -139,10 +150,10 @@
                             "🎫 17:00前都算白天券，可視抵達時間直接買一日券",
                             "✨ 點燈活動僅限定於「水上樂園」區舉辦"
                         ],
-                        mainImage: "images/botanical-garden-1.png",
+                        mainImage: "botanical-garden-1.png",
                         illustratedGuides: [
-                            { img: "images/botanical-garden-2.png", title: "地圖", desc: "" },
-                            { img: "images/botanical-garden-4.png", title: "點燈期間", desc: "點燈期間園方會在平..." }
+                            { img: "botanical-garden-2.png", title: "地圖", desc: "" },
+                            { img: "botanical-garden-4.png", title: "點燈期間", desc: "點燈期間園方會在平..." }
                         ],
                         fullGuide: `
                             <p><strong>✨ 【夜間燈光秀】(17:00-21:00)</strong><br>
@@ -165,7 +176,7 @@
                             "📝 預訂確認碼: 5797.814.568 ｜ PIN碼: 4851",
                             "⚠️ 15:00~00:00 入住，10:00 前退房"
                         ],
-                        mainImage: "images/lieta.png",
+                        mainImage: "lieta.png",
                         fullGuide: `
                             <p><strong>🛏️ 【房型設施】</strong><br>
                             Moderate Room (5-6 Guests)。63m²，有洗衣機與烘衣機。2張單人床 + 6張日式床舖。傳統榻榻米地板（適合幼兒）。</p>
@@ -180,7 +191,7 @@
                 day: "週日",
                 events: [
                     { 
-                        time: "07:30 - 10:30", 
+                        time: "08:30 - 10:30", 
                         title: "美麗海水族館", 
                         type: "景點", 
                         icon: "🐋", 
@@ -205,9 +216,9 @@
                         title: "古宇利島", 
                         type: "景點", 
                         icon: "🏝",
-                        mainImage: "images/kouri-bridge-1.png",
+                        mainImage: "kouri-bridge-1.png",
                         illustratedGuides: [
-                            { img: "images/kouri-bridge-2.png", title: "古宇利島景點", desc: "" }
+                            { img: "kouri-bridge-2.png", title: "古宇利島景點", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🌉 【古宇利大橋南詰展望所】</strong><br>
@@ -223,10 +234,10 @@
                         icon: "🍙", 
                         mapcode: "485 692 126*72",
                         phone: "+81 980-51-5252",
-                        mainImage: "images/shirasa-1.png",
+                        mainImage: "shirasa-1.png",
                         illustratedGuides: [
-                            { img: "images/shirasa-2.png", title: "", desc: "" },
-                            { img: "images/shirasa-3.png", title: "", desc: "" }
+                            { img: "shirasa-2.png", title: "", desc: "" },
+                            { img: "shirasa-3.png", title: "", desc: "" }
                         ]
                     },
                     { 
@@ -236,9 +247,9 @@
                         icon: "🦐", 
                         phone: "+81 980-56-1242", 
                         memo: "營業時間: 11:00–16:00",
-                        mainImage: "images/shrimp-wagon-1.png",
+                        mainImage: "shrimp-wagon-1.png",
                         illustratedGuides: [
-                            { img: "images/shrimp-wagon-2.png", title: "", desc: "" }
+                            { img: "shrimp-wagon-2.png", title: "", desc: "" }
                         ]
                     },
                     { 
@@ -251,9 +262,9 @@
                         details: [
                             "🎟️ 直接在售票處使用「Okinawa Fun Pass」換票"
                         ],
-                        mainImage: "images/ocean-tower.png",
+                        mainImage: "ocean-tower.png",
                         illustratedGuides: [
-                            { img: "images/ocean-tower-2.png", title: "地圖", desc: "" }
+                            { img: "ocean-tower-2.png", title: "地圖", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🚙 【自動登山車】</strong><br>
@@ -274,10 +285,10 @@
                         details: [
                             "💡 建議點中間價位「結」套餐，免費烤網可換三次，飲料喝到飽。"
                         ],
-                        mainImage: "images/goen-1.png",
+                        mainImage: "goen-1.png",
                         illustratedGuides: [
-                            { img: "images/goen-2.jpg", title: "「結」套餐清單", desc: "" },
-                            { img: "images/goen-3.png", title: "等待時可以去一旁的二手店", desc: "" }
+                            { img: "goen-2.jpg", title: "「結」套餐清單", desc: "" },
+                            { img: "goen-3.png", title: "等待時可以去一旁的二手店", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🥩 【菜單推薦】</strong><br>
@@ -296,9 +307,9 @@
                         details: [
                             "🎫 優惠券：購買不含稅滿 10,000 日元可享受 5% 折扣"
                         ],
-                        mainImage: "images/donki-1.png",
+                        mainImage: "donki-1.png",
                         illustratedGuides: [
-                            { img: "images/donki-2.png", title: "優惠券", desc: "" }
+                            { img: "donki-2.png", title: "優惠券", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>⏰ 【營業時間】</strong><br>
@@ -334,10 +345,10 @@
                         icon: "🌳", 
                         mapcode: "206 626 503*38", 
                         phone: "+81 980-43-0762",
-                        mainImage: "images/21st-park-1.png",
+                        mainImage: "21st-park-1.png",
                         illustratedGuides: [
-                            { img: "images/21st-park-2.png", title: "", desc: "" },
-                            { img: "images/21st-park-4.png", title: "", desc: "" }
+                            { img: "21st-park-2.png", title: "", desc: "" },
+                            { img: "21st-park-4.png", title: "", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>☕ 【星巴克草蓆體驗 (07:30營業)】</strong><br>
@@ -361,10 +372,10 @@
                         type: "美食", 
                         icon: "🍲",
                         memo: "營業時間: 11:00–15:30 / 17:30–21:00",
-                        mainImage: "images/ufuya-1.jpg",
+                        mainImage: "ufuya-1.jpg",
                         illustratedGuides: [
-                            { img: "images/ufuya.png", title: "", desc: "" },
-                            { img: "images/ufuya-2.png", title: "現場抽取號碼券", desc: "" }
+                            { img: "ufuya.png", title: "", desc: "" },
+                            { img: "ufuya-2.png", title: "現場抽取號碼券", desc: "" }
                         ]
                     },
                     { 
@@ -374,7 +385,7 @@
                         icon: "🎈", 
                         mapcode: "206 689 516*54",
                         phone: "+81 980-50-9267",
-                        mainImage: "images/birthday.png",
+                        mainImage: "birthday.png",
                         fullGuide: `
                             <p><strong>👗 【童裝風格】</strong><br>
                             設計感強、日系大地色/文青風、質感佳（適合買過年穿或外出拍照的衣服）。</p>
@@ -394,7 +405,7 @@
                         details: [
                             "🛍️ 購買清單：啾(雨具/水壺/液態奶)、姐妹(衣服/內褲/泡澡球)"
                         ],
-                        mainImage: "images/nishimatsuya.png",
+                        mainImage: "nishimatsuya.png",
                         fullGuide: `
                             <p><strong>👕 【童裝風格】</strong><br>
                             便宜、款式基本、圖案較傳統（適合買去幼稚園弄髒不心疼的衣服）。</p>
@@ -416,7 +427,7 @@
                         details: [
                             "💡 採現場入座。建議採自助式點餐後再去尋找座位。"
                         ],
-                        mainImage: "images/banta-cafe-2.png",
+                        mainImage: "banta-cafe-2.png",
                         fullGuide: `
                             <p><strong>🌅 【四大看海座位區】</strong><br>
                             • <strong>大屋頂露臺：</strong>半開放式木造露臺，180度環繞海景視野最遼闊。<br>
@@ -436,9 +447,9 @@
                         details: [
                             "🅿️ 推薦停車：AEON 永旺北谷店停車場 (室內)"
                         ],
-                        mainImage: "images/american-village-1.png",
+                        mainImage: "american-village-1.png",
                         illustratedGuides: [
-                            { img: "images/american-village-2.png", title: "", desc: "" }
+                            { img: "american-village-2.png", title: "", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🚗 【停車策略】</strong><br>
@@ -479,9 +490,9 @@
                         icon: "🍔", 
                         mapcode: "33 034 260*58", 
                         memo: "沖繩在地苦瓜漢堡",
-                        mainImage: "images/jef-burger-1.png",
+                        mainImage: "jef-burger-1.png",
                         illustratedGuides: [
-                            { img: "images/jef-burger-2.png", title: "菜單", desc: "" }
+                            { img: "jef-burger-2.png", title: "菜單", desc: "" }
                         ]
                     },
                     { 
@@ -492,9 +503,9 @@
                         details: [
                             "⚠️ 當天會撞到首里城遶境，務必於中午11:00前離開。"
                         ],
-                        mainImage: "images/daruma-temple-2.png",
+                        mainImage: "daruma-temple-2.png",
                         illustratedGuides: [
-                            { img: "images/daruma-temple-1.png", title: "", desc: "" }
+                            { img: "daruma-temple-1.png", title: "", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🅿️ 【停車資訊 (車位少)】</strong><br>
@@ -518,10 +529,10 @@
                         title: "第一牧志公設市場", 
                         type: "美食", 
                         icon: "🦀",
-                        mainImage: "images/makishi-market-1.png",
+                        mainImage: "makishi-market-1.png",
                         illustratedGuides: [
-                            { img: "images/makishi-market-2.png", title: "推薦仲田鮮魚", desc: "很多人買龍蝦、夜光貝、長尾魚。仲田鮮魚優勢：店員會說中文，溝通順暢，會協助推薦" },
-                            { img: "images/makishi-market-3.png", title: "如果要自己選，代客料理", desc: "" }
+                            { img: "makishi-market-2.png", title: "推薦仲田鮮魚", desc: "很多人買龍蝦、夜光貝、長尾魚。仲田鮮魚優勢：店員會說中文，溝通順暢，會協助推薦" },
+                            { img: "makishi-market-3.png", title: "如果要自己選，代客料理", desc: "" }
                         ],
                         directGuide: `
                             <p><strong>🐟 【一樓買海鮮】</strong><br>
@@ -538,7 +549,7 @@
                         icon: "🍜", 
                         mapcode: "33 095 245*85",
                         phone: "098-857-5577",
-                        mainImage: "images/tondo-ramen.png",
+                        mainImage: "tondo-ramen.png",
                         directGuide: `
                             <p><strong>🍜 【男人麵】（正宗博多豚骨）</strong><br>
                             湯頭濃郁醇厚，膠質豐富且無過重腥味或油膩感，鹹度剛好，搭配細直麵特別對味。</p>
@@ -560,10 +571,10 @@
                         type: "景點", 
                         icon: "⛩️", 
                         mapcode: "33 185 022*00",
-                        mainImage: "images/naminoue-1.png",
+                        mainImage: "naminoue-1.png",
                         illustratedGuides: [
-                            { img: "images/naminoue-2.png", title: "紅型御守、書包御守", desc: "紅型御守:使用沖繩傳統紅型染布製作，色彩鮮艷繽紛,為健康御守,保佑身體健康。 書包御守:以日本小學生書包為造型,祈求交通安全,是波上宮的熱門御守。 結緣御守:以貝殼造型製作,上面繪有身穿傳統服裝的男女,象徵良緣與姻緣。" },
-                            { img: "images/naminoue-3.png", title: "御朱印有三種選擇", desc: "" }
+                            { img: "naminoue-2.png", title: "紅型御守、書包御守", desc: "紅型御守:使用沖繩傳統紅型染布製作，色彩鮮艷繽紛,為健康御守,保佑身體健康。 書包御守:以日本小學生書包為造型,祈求交通安全,是波上宮的熱門御守。 結緣御守:以貝殼造型製作,上面繪有身穿傳統服裝的男女,象徵良緣與姻緣。" },
+                            { img: "naminoue-3.png", title: "御朱印有三種選擇", desc: "" }
                         ],
                         fullGuide: `
                             <p><strong>🅿️ 【停車資訊】</strong><br>
@@ -641,9 +652,9 @@
                         icon: "🦇", 
                         mapcode: "232 495 333*86",
                         phone: "+81 98-949-7421",
-                        mainImage: "images/okinawa-world-2.png",
+                        mainImage: "okinawa-world-2.png",
                         illustratedGuides: [
-                            { img: "images/okinawa-world-3.png", title: "", desc: "" }
+                            { img: "okinawa-world-3.png", title: "", desc: "" }
                         ],
                         directGuide: `
                             <p><strong>🦇 【玉泉洞】</strong><br>
@@ -658,7 +669,7 @@
                     { time: "15:00", title: "SPORTS DEPO Toyosaki", type: "逛街", icon: "👟", memo: "運動用品最後採買" },
                     { time: "15:30", title: "OTS 還車", type: "交通", icon: "🚗", memo: "請預留時間檢查車輛與加油" },
                     { 
-                        time: "20:15 - 20:55", 
+                        time: "20:15(JP) - 20:55(TW)", 
                         title: "日本 ✈ 台灣", 
                         type: "交通", 
                         icon: "✈️", 
@@ -689,10 +700,10 @@
                         type: "美食", 
                         icon: "🍣", 
                         mapcode: "206 687 196*84", 
-                        mainImage: "images/hama-1.png",
+                        mainImage: "hama-1.png",
                         illustratedGuides: [
-                            { img: "images/hama-4.png", title: "哇沙米跟餐具在抽屜", desc: "" },
-                            { img: "images/hama-5.png", title: "", desc: "" }
+                            { img: "hama-4.png", title: "哇沙米跟餐具在抽屜", desc: "" },
+                            { img: "hama-5.png", title: "", desc: "" }
                         ]
                     }
                 ]
@@ -702,6 +713,32 @@
         let currentDayIndex = 0;
         const tabsContainer = document.getElementById('date-tabs');
         const scheduleContainer = document.getElementById('schedule-container');
+        
+        // Modal State Variables
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+
+        function openImageModal(imgSrc) {
+            modalImage.src = imgSrc;
+            imageModal.classList.remove('hidden');
+            // Allow display:block to apply before adding opacity
+            setTimeout(() => {
+                imageModal.classList.add('show');
+                modalImage.classList.remove('scale-95');
+                modalImage.classList.add('scale-100');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeImageModal() {
+            imageModal.classList.remove('show');
+            modalImage.classList.remove('scale-100');
+            modalImage.classList.add('scale-95');
+            setTimeout(() => {
+                imageModal.classList.add('hidden');
+            }, 300); // Matches the CSS transition duration
+            document.body.style.overflow = ''; // Restore background scrolling
+        }
 
         function getTypeStyle(type) {
             switch(type) {
@@ -780,98 +817,78 @@
                 let hasBody = event.mapcode || event.phone || event.memo || (event.details && event.details.length > 0) || event.fullGuide || event.directGuide || event.mainImage || (event.illustratedGuides && event.illustratedGuides.length > 0);
 
                 if (hasBody) {
-                    bodyHtml += '<div class="px-4 pb-4 pt-3 bg-white">';
+                    bodyHtml += '<div class="px-5 pb-5 pt-3 bg-white flex flex-col gap-4">';
                     
-                    if (event.memo) {
-                        bodyHtml += `<p class="text-[15px] font-bold text-slate-600 mb-3 leading-relaxed border-l-4 border-amber-400 pl-3 bg-amber-50/50 py-1.5">${event.memo}</p>`;
-                    }
-
-                    if (event.mapcode || event.phone) {
-                        bodyHtml += `<div class="flex flex-col gap-2 mb-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-inner">`;
+                    // 1. 實用資訊 (Mapcode, 電話, Memo) 整合為一個簡潔的灰色小區塊
+                    if (event.mapcode || event.phone || event.memo) {
+                        bodyHtml += `<div class="bg-slate-50 rounded-lg p-3 text-[14px] text-slate-700 space-y-1.5 border border-slate-100">`;
+                        if (event.memo) {
+                            bodyHtml += `<div class="font-bold text-amber-600 mb-1">💡 ${event.memo}</div>`;
+                        }
                         if (event.mapcode) {
-                            bodyHtml += `
-                                <div class="flex items-center text-[15px]">
-                                    <span class="text-slate-400 mr-2">📍</span>
-                                    <span class="font-bold text-slate-500 mr-2">MapCode:</span>
-                                    <span class="font-black text-slate-800 tracking-wider bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200 select-all">${event.mapcode}</span>
-                                </div>
-                            `;
+                            bodyHtml += `<div>📍 <span class="text-slate-500">MapCode:</span> <span class="font-mono font-bold select-all bg-white px-1.5 py-0.5 rounded border border-slate-200 ml-1">${event.mapcode}</span></div>`;
                         }
                         if (event.phone) {
-                            bodyHtml += `
-                                <div class="flex items-center text-[15px] mt-0.5">
-                                    <span class="text-slate-400 mr-2">📞</span>
-                                    <span class="font-bold text-slate-500 mr-2">電話:</span>
-                                    <span class="font-black text-slate-800 bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200 select-all">${event.phone}</span>
-                                </div>
-                            `;
+                            bodyHtml += `<div>📞 <span class="text-slate-500">電話:</span> <span class="font-mono font-bold select-all bg-white px-1.5 py-0.5 rounded border border-slate-200 ml-1">${event.phone}</span></div>`;
                         }
                         bodyHtml += `</div>`;
                     }
 
+                    // 2. 文字攻略 (統一合併，無折疊，直接呈現為好閱讀的文章段落)
+                    let textContent = '';
                     if (event.details && event.details.length > 0) {
-                        bodyHtml += `<div class="bg-blue-50/50 border border-blue-100 rounded-xl p-3.5 space-y-2.5 mb-3">`;
                         event.details.forEach(detail => {
-                            bodyHtml += `<p class="text-[15px] font-bold text-slate-700 leading-relaxed">${detail}</p>`;
+                            textContent += `<p class="font-bold text-slate-700">${detail}</p>`;
                         });
-                        bodyHtml += `</div>`;
                     }
-
-                    if (event.mainImage) {
+                    if (event.directGuide) textContent += `<div class="space-y-3">${event.directGuide}</div>`;
+                    if (event.fullGuide) textContent += `<div class="space-y-3 mt-3">${event.fullGuide}</div>`;
+                    
+                    if (textContent) {
                         bodyHtml += `
-                            <div class="mb-3 w-full h-44 bg-slate-100 rounded-xl border border-slate-200 overflow-hidden shadow-sm flex items-center justify-center relative group">
-                                <img src="${event.mainImage}" alt="${event.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\'text-center p-2\\'><span class=\\'text-3xl\\'>🏞️</span><p class=\\'text-xs font-bold text-slate-500 mt-1\\'>${event.title}</p><p class=\\'text-[10px] text-slate-400\\'>${event.mainImage}</p></div>'">
+                            <div class="text-[15px] leading-relaxed text-slate-800 space-y-3 break-words">
+                                ${textContent}
                             </div>
                         `;
                     }
 
-                    if (event.illustratedGuides && event.illustratedGuides.length > 0) {
-                        bodyHtml += `
-                            <div class="mb-3">
-                                <p class="text-xs font-bold text-slate-400 mb-2 flex items-center gap-1">
-                                    <span>📸 細節導覽 (左右滑動看更多)</span>
-                                </p>
-                                <div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-2">
-                        `;
-                        event.illustratedGuides.forEach(item => {
+                    // 3. 照片區 (保留點擊放大功能，簡化排版)
+                    if (event.mainImage || (event.illustratedGuides && event.illustratedGuides.length > 0)) {
+                        bodyHtml += `<div class="space-y-3 mt-2">`;
+                        
+                        // 主圖
+                        if (event.mainImage) {
                             bodyHtml += `
-                                <div class="flex-shrink-0 w-44 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col">
-                                    <div class="h-24 bg-slate-200 flex items-center justify-center relative overflow-hidden group">
-                                        <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\'text-center p-1\\'><span class=\\'text-xl\\'>📷</span><p class=\\'text-[9px] text-slate-400 truncate w-36\\'>${item.img}</p></div>'">
-                                    </div>
-                                    <div class="p-2.5 flex-1 flex flex-col justify-between">
-                                        <h4 class="text-[12px] font-black text-slate-800 mb-0.5">${item.title}</h4>
-                                        <p class="text-[10.5px] font-medium text-slate-600 leading-snug">${item.desc}</p>
-                                    </div>
+                                <div class="w-full h-48 bg-slate-100 rounded-xl overflow-hidden cursor-pointer relative border border-slate-200 shadow-sm" onclick="openImageModal('images/${event.mainImage}')">
+                                    <img src="images/${event.mainImage}" alt="${event.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-slate-400 text-sm\\'>📷 images/${event.mainImage}</div>'">
+                                    <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[11px] px-2.5 py-1 rounded-full backdrop-blur-sm">🔍 放大</div>
                                 </div>
                             `;
-                        });
-                        bodyHtml += `
-                                </div>
-                            </div>
-                        `;
-                    }
-                    
-                    if (event.fullGuide) {
-                        bodyHtml += `
-                            <details class="group mt-3 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                                <summary class="p-3 font-bold text-slate-700 cursor-pointer bg-slate-100 hover:bg-slate-200 transition-colors flex justify-between items-center select-none text-[15px]">
-                                    <span>📖 查看詳細攻略</span>
-                                    <span class="transform group-open:rotate-180 transition-transform duration-200">▼</span>
-                                </summary>
-                                <div class="p-4 text-[14.5px] text-slate-600 space-y-3.5 leading-relaxed bg-white border-t border-slate-200">
-                                    ${event.fullGuide}
-                                </div>
-                            </details>
-                        `;
-                    }
-                    
-                    if (event.directGuide) {
-                        bodyHtml += `
-                            <div class="mt-3 p-4 text-[14.5px] text-slate-700 space-y-3.5 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
-                                ${event.directGuide}
-                            </div>
-                        `;
+                        }
+
+                        // 滑動小卡 (去除了過多的文字底色，看起來更俐落)
+                        if (event.illustratedGuides && event.illustratedGuides.length > 0) {
+                            bodyHtml += `<div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-2 pt-1">`;
+                            event.illustratedGuides.forEach(item => {
+                                bodyHtml += `
+                                    <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}')">
+                                        <div class="h-28 bg-slate-100 relative">
+                                            <img src="images/${item.img}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex flex-col items-center justify-center h-full text-[10px] text-slate-400 px-2 text-center\\'>📷<br>${item.img}</div>'">
+                                            <div class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">🔍</div>
+                                        </div>
+                                        ${(item.title || item.desc) ? `
+                                        <div class="p-2.5">
+                                            ${item.title ? `<h4 class="text-[12px] font-bold text-slate-800 mb-1">${item.title}</h4>` : ''}
+                                            ${item.desc ? `<p class="text-[11.5px] text-slate-500 leading-snug line-clamp-3">${item.desc}</p>` : ''}
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            });
+                            bodyHtml += `</div>`;
+                        }
+                        
+                        bodyHtml += `</div>`;
                     }
                     
                     bodyHtml += '</div>';
@@ -893,6 +910,13 @@
                 scheduleContainer.style.transform = 'translateY(0)';
             }, 20);
         }
+
+        // Close modal when pressing ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && !imageModal.classList.contains('hidden')) {
+                closeImageModal();
+            }
+        });
 
         renderTabs();
         renderSchedule();
