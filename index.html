@@ -66,10 +66,9 @@
             ✕
         </button>
         <div class="relative w-full max-w-lg flex flex-col items-center justify-center h-full">
-            <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-            <div id="modal-caption" class="mt-4 w-full bg-slate-800/90 backdrop-blur-md rounded-xl p-4 hidden shadow-lg" onclick="event.stopPropagation()">
-                <h3 id="modal-title" class="text-[17px] font-bold text-white mb-1.5"></h3>
-                <p id="modal-desc" class="text-[14px] text-slate-200 leading-relaxed break-words"></p>
+            <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            <div id="modal-caption" class="mt-4 w-full bg-slate-800/90 backdrop-blur-md rounded-xl p-3 hidden shadow-lg text-center" onclick="event.stopPropagation()">
+                <h3 id="modal-title" class="text-[16px] font-bold text-white"></h3>
             </div>
         </div>
     </div>
@@ -722,22 +721,18 @@
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
 
-        function openImageModal(imgSrc, encodedTitle = '', encodedDesc = '') {
+        function openImageModal(imgSrc, encodedTitle = '') {
             const title = decodeURIComponent(encodedTitle);
-            const desc = decodeURIComponent(encodedDesc);
 
             modalImage.src = imgSrc;
             
             const captionBlock = document.getElementById('modal-caption');
             const titleEl = document.getElementById('modal-title');
-            const descEl = document.getElementById('modal-desc');
             
-            if (title || desc) {
+            if (title) {
                 captionBlock.classList.remove('hidden');
                 titleEl.textContent = title;
-                titleEl.style.display = title ? 'block' : 'none';
-                descEl.textContent = desc;
-                descEl.style.display = desc ? 'block' : 'none';
+                titleEl.style.display = 'block';
             } else {
                 captionBlock.classList.add('hidden');
             }
@@ -894,17 +889,15 @@
                             bodyHtml += `<div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-2 pt-1">`;
                             event.illustratedGuides.forEach(item => {
                                 const encodedTitle = item.title ? encodeURIComponent(item.title) : '';
-                                const encodedDesc = item.desc ? encodeURIComponent(item.desc) : '';
                                 bodyHtml += `
-                                    <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}', '${encodedTitle}', '${encodedDesc}')">
+                                    <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}', '${encodedTitle}')">
                                         <div class="h-28 bg-slate-100 relative">
                                             <img src="images/${item.img}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex flex-col items-center justify-center h-full text-[10px] text-slate-400 px-2 text-center\\'>📷<br>${item.img}</div>'">
                                             <div class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">🔍</div>
                                         </div>
-                                        ${item.title || item.desc ? `
+                                        ${item.title ? `
                                         <div class="p-2.5">
-                                            ${item.title ? `<h4 class="text-[12px] font-bold text-slate-800">${item.title}</h4>` : ''}
-                                            ${item.desc ? `<p class="text-[11px] font-bold text-blue-500 mt-1">👆 點擊看解說</p>` : ''}
+                                            <h4 class="text-[12px] font-bold text-slate-800">${item.title}</h4>
                                         </div>
                                         ` : ''}
                                     </div>
