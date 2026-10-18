@@ -61,12 +61,16 @@
     </main>
 
     <!-- Image Viewer Modal (Lightbox) -->
-    <div id="image-modal" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-2 opacity-0 pointer-events-none hidden" onclick="closeImageModal()">
+    <div id="image-modal" class="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4 opacity-0 hidden" onclick="closeImageModal()">
         <button onclick="closeImageModal()" class="absolute top-4 right-4 z-50 text-white bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors">
             ✕
         </button>
-        <div class="relative max-w-full max-h-full flex items-center justify-center w-full h-full p-2">
-            <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+        <div class="relative w-full max-w-lg flex flex-col items-center justify-center h-full">
+            <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            <div id="modal-caption" class="mt-4 w-full bg-slate-800/90 backdrop-blur-md rounded-xl p-4 hidden shadow-lg" onclick="event.stopPropagation()">
+                <h3 id="modal-title" class="text-[17px] font-bold text-white mb-1.5"></h3>
+                <p id="modal-desc" class="text-[14px] text-slate-200 leading-relaxed break-words"></p>
+            </div>
         </div>
     </div>
 
@@ -718,8 +722,26 @@
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
 
-        function openImageModal(imgSrc) {
+        function openImageModal(imgSrc, encodedTitle = '', encodedDesc = '') {
+            const title = decodeURIComponent(encodedTitle);
+            const desc = decodeURIComponent(encodedDesc);
+
             modalImage.src = imgSrc;
+            
+            const captionBlock = document.getElementById('modal-caption');
+            const titleEl = document.getElementById('modal-title');
+            const descEl = document.getElementById('modal-desc');
+            
+            if (title || desc) {
+                captionBlock.classList.remove('hidden');
+                titleEl.textContent = title;
+                titleEl.style.display = title ? 'block' : 'none';
+                descEl.textContent = desc;
+                descEl.style.display = desc ? 'block' : 'none';
+            } else {
+                captionBlock.classList.add('hidden');
+            }
+
             imageModal.classList.remove('hidden');
             // Allow display:block to apply before adding opacity
             setTimeout(() => {
@@ -858,28 +880,31 @@
                         
                         // 主圖
                         if (event.mainImage) {
+                            const encodedMainTitle = encodeURIComponent(event.title);
                             bodyHtml += `
-                                <div class="w-full h-48 bg-slate-100 rounded-xl overflow-hidden cursor-pointer relative border border-slate-200 shadow-sm" onclick="openImageModal('images/${event.mainImage}')">
+                                <div class="w-full h-48 bg-slate-100 rounded-xl overflow-hidden cursor-pointer relative border border-slate-200 shadow-sm" onclick="openImageModal('images/${event.mainImage}', '${encodedMainTitle}', '')">
                                     <img src="images/${event.mainImage}" alt="${event.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-slate-400 text-sm\\'>📷 images/${event.mainImage}</div>'">
                                     <div class="absolute bottom-2 right-2 bg-black/60 text-white text-[11px] px-2.5 py-1 rounded-full backdrop-blur-sm">🔍 放大</div>
                                 </div>
                             `;
                         }
 
-                        // 滑動小卡 (去除了過多的文字底色，看起來更俐落)
+                        // 滑動小卡 (文字隱藏到放大視窗中)
                         if (event.illustratedGuides && event.illustratedGuides.length > 0) {
                             bodyHtml += `<div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-2 pt-1">`;
                             event.illustratedGuides.forEach(item => {
+                                const encodedTitle = item.title ? encodeURIComponent(item.title) : '';
+                                const encodedDesc = item.desc ? encodeURIComponent(item.desc) : '';
                                 bodyHtml += `
-                                    <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}')">
+                                    <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}', '${encodedTitle}', '${encodedDesc}')">
                                         <div class="h-28 bg-slate-100 relative">
                                             <img src="images/${item.img}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex flex-col items-center justify-center h-full text-[10px] text-slate-400 px-2 text-center\\'>📷<br>${item.img}</div>'">
                                             <div class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">🔍</div>
                                         </div>
-                                        ${(item.title || item.desc) ? `
+                                        ${item.title || item.desc ? `
                                         <div class="p-2.5">
-                                            ${item.title ? `<h4 class="text-[12px] font-bold text-slate-800 mb-1">${item.title}</h4>` : ''}
-                                            ${item.desc ? `<p class="text-[11.5px] text-slate-500 leading-snug line-clamp-3">${item.desc}</p>` : ''}
+                                            ${item.title ? `<h4 class="text-[12px] font-bold text-slate-800">${item.title}</h4>` : ''}
+                                            ${item.desc ? `<p class="text-[11px] font-bold text-blue-500 mt-1">👆 點擊看解說</p>` : ''}
                                         </div>
                                         ` : ''}
                                     </div>
