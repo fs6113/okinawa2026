@@ -35,6 +35,57 @@
         #image-modal.show {
             opacity: 1;
         }
+
+        /* 國際通專屬路線樣式 */
+        .route-guide {
+            background-color: #FAFAFA;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-family: sans-serif;
+            color: #333;
+            border: 1px solid #e2e8f0;
+        }
+        .route-guide h3 {
+            font-size: 1.1em;
+            font-weight: 900;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .route-steps {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+        .route-steps li {
+            margin-bottom: 25px;
+            border-left: 3px solid #582C5F; /* 質感深紫色 */
+            padding-left: 15px;
+            position: relative;
+        }
+        .route-steps li strong {
+            display: block;
+            font-size: 1.05em;
+            margin-bottom: 5px;
+            color: #582C5F;
+        }
+        .route-steps p {
+            margin: 5px 0 0 0;
+            line-height: 1.5;
+            color: #475569;
+        }
+        .route-steps .special-step {
+            border-left: 3px dashed #E05252;
+            background-color: #FFF0F0;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            border-top: 1px solid #ffe4e4;
+            border-right: 1px solid #ffe4e4;
+            border-bottom: 1px solid #ffe4e4;
+        }
+        .route-steps .special-step strong {
+            color: #D32F2F;
+        }
     </style>
 </head>
 <body class="text-slate-800 pb-24 antialiased relative">
@@ -67,10 +118,9 @@
         </button>
         <div class="relative w-full max-w-lg flex flex-col items-center justify-center h-full">
             <img id="modal-image" src="" alt="Enlarged view" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-            <!-- Caption 區塊，支援長文字與 desc -->
-            <div id="modal-caption" class="mt-4 w-full bg-slate-800/90 backdrop-blur-md rounded-xl p-4 hidden shadow-lg text-center max-h-[25vh] overflow-y-auto hide-scrollbar" onclick="event.stopPropagation()">
+            <div id="modal-caption" class="mt-4 w-full bg-slate-800/90 backdrop-blur-md rounded-xl p-4 hidden shadow-lg text-center max-h-[30vh] overflow-y-auto hide-scrollbar" onclick="event.stopPropagation()">
                 <h3 id="modal-title" class="text-[16px] font-bold text-white mb-1"></h3>
-                <p id="modal-desc" class="text-[14px] text-slate-300 leading-relaxed text-left inline-block"></p>
+                <p id="modal-desc" class="text-[14px] text-slate-300 leading-relaxed text-left inline-block w-full"></p>
             </div>
         </div>
     </div>
@@ -423,7 +473,7 @@
                             <p><strong>🛁 【泡澡球與玩具】</strong><br>
                             有專門的泡澡球陳列區（麵包超人、迪士尼等），款式比藥妝店齊全且最便宜。</p>
                             <p><strong>🍼 【幼兒食與零食】</strong><br>
-                            選擇最多，品牌齊全度堪 মজ批發庫存等級。</p>
+                            選擇最多，品牌齊全度堪稱批發庫存等級。</p>
                             <p><strong>💡 【總結】</strong><br>
                             走道寬敞像大倉庫，【無退稅】。</p>
                         `
@@ -531,8 +581,57 @@
                         type: "逛街", 
                         icon: "🛍️",
                         directGuide: `
-                            <p><strong>🅿️ 【推薦停車】</strong><br>
-                            優先選擇【みどり駐車場】，腹地大約可停 200 台，是逛國際通的停車首選。</p>
+                            <div class="route-guide">
+                              <h3>🛍️ 國際通精準踩點 O 型逛街路線</h3>
+                              <p class="text-sm text-slate-500 mb-3">從市場商店街一路逛到百貨，串聯所有必逛愛店的完整散步攻略！</p>
+                              
+                              <ul class="route-steps">
+                                <li>
+                                  <strong>🅿️ 1. 停車：みどり駐車場 (綠停車場)</strong>
+                                  <p>室內停車場，不用怕日曬雨淋。整頓好兩台推車與隨身包包後出發！</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🚶 2. 漫步商店街：市場本通</strong>
+                                  <p>從停車場走進充滿懷舊氣息的市場本通，有遮雨棚，推著長輩與小孩慢慢逛在地特產。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🍽️ 3. 午餐：第一牧志公設市場</strong>
+                                  <p>在市場二樓享用代客料理海鮮午餐。吃飽後可以在一樓選購一些新鮮食材。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🚶 4. 續逛有頂棚街區：平和通</strong>
+                                  <p>吃飽後從市場穿過平和通往國際通大馬路前進，沿路有很多沖繩獅子擺飾與小店。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🍟 5. 點心時間：Calbee+ (國際通店)</strong>
+                                  <p>抵達國際通！來一份現炸的紅芋薯條與馬鈴薯條，幫小朋友補充一點繼續逛街的動力。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🍦 6. 必吃冰淇淋：塩屋 国際通り店</strong>
+                                  <p>就在 Calbee 附近，一定要品嚐招牌的雪鹽冰淇淋，還能買各種沖繩特色鹽當伴手禮。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🧼 7. 質感香氛：首里石鹼 (松尾店)</strong>
+                                  <p>往琉貿百貨的方向順走，在這間充滿沖繩植物香氣的店裡試洗手工皂，購買護手霜。</p>
+                                </li>
+                            
+                                <li>
+                                  <strong>🏬 8. 終點休息站：琉貿百貨</strong>
+                                  <p>抵達最南端！帶寶貝直奔 8 樓寶可夢中心，阿公阿嬤逛 B1 生鮮超市，全家在這裡吹冷氣大休息。</p>
+                                </li>
+                            
+                                <li class="special-step">
+                                  <strong>🚕 9. 回程：走回停車場 或 啟動專人取車戰術</strong>
+                                  <p>如果大家體力還行，可以沿著國際通另一側慢慢散步回みどり駐車場。如果長輩跟小孩累了，老公可以走到外面的「縣廳前站」，搭乘單軌電車到「美榮橋站」或直接攔計程車回到みどり駐車場牽車，再開回琉貿百貨門口接大家上車！</p>
+                                </li>
+                              </ul>
+                            </div>
                         `
                     },
                     { 
@@ -543,7 +642,7 @@
                         mainImage: "makishi-market-1.png",
                         illustratedGuides: [
                             { img: "makishi-market-2.png", title: "推薦仲田鮮魚", desc: "很多人買龍蝦、夜光貝、長尾魚。仲田鮮魚優勢：店員會說中文，溝通順暢，會協助推薦" },
-                            { img: "makishi-market-3.png", title: "代客料理", desc: "如果要自己選，代客料理代客料理推薦燕子餐廳" }
+                            { img: "makishi-market-3.png", title: "", desc: "如果要自己選，代客料理代客料理推薦燕子餐廳" }
                         ],
                         directGuide: `
                             <p><strong>🐟 【一樓買海鮮】</strong><br>
@@ -858,7 +957,7 @@
                 if (hasBody) {
                     bodyHtml += '<div class="px-5 pb-5 pt-3 bg-white flex flex-col gap-4">';
                     
-                    // 1. 實用資訊 (Mapcode, 電話, Memo) 整合為一個簡潔的灰色小區塊
+                    // 1. 實用資訊 (Mapcode, 電話, Memo)
                     if (event.mapcode || event.phone || event.memo) {
                         bodyHtml += `<div class="bg-slate-50 rounded-lg p-3 text-[14px] text-slate-700 space-y-1.5 border border-slate-100">`;
                         if (event.memo) {
@@ -873,7 +972,7 @@
                         bodyHtml += `</div>`;
                     }
 
-                    // 2. 文字攻略 (統一合併，無折疊，直接呈現為好閱讀的文章段落)
+                    // 2. 文字攻略
                     let textContent = '';
                     if (event.details && event.details.length > 0) {
                         event.details.forEach(detail => {
@@ -891,7 +990,7 @@
                         `;
                     }
 
-                    // 3. 照片區 (保留點擊放大功能，簡化排版)
+                    // 3. 照片區
                     if (event.mainImage || (event.illustratedGuides && event.illustratedGuides.length > 0)) {
                         bodyHtml += `<div class="space-y-3 mt-2">`;
                         
@@ -906,12 +1005,12 @@
                             `;
                         }
 
-                        // 滑動小卡 (文字隱藏到放大視窗中)
+                        // 滑動小卡 
                         if (event.illustratedGuides && event.illustratedGuides.length > 0) {
                             bodyHtml += `<div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-2 pt-1">`;
                             event.illustratedGuides.forEach(item => {
                                 const encodedTitle = item.title ? encodeURIComponent(item.title) : '';
-                                const encodedDesc = item.desc ? encodeURIComponent(item.desc) : ''; // 將 desc 編碼傳入
+                                const encodedDesc = item.desc ? encodeURIComponent(item.desc) : '';
                                 bodyHtml += `
                                     <div class="flex-shrink-0 w-40 bg-white rounded-xl border border-slate-200 overflow-hidden cursor-pointer flex flex-col shadow-sm" onclick="openImageModal('images/${item.img}', '${encodedTitle}', '${encodedDesc}')">
                                         <div class="h-28 bg-slate-100 relative">
